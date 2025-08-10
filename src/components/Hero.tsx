@@ -1,8 +1,37 @@
 import { Button } from "@/components/ui/button";
 import { Play, MapPin, BookOpen } from "lucide-react";
 import heroImage from "@/assets/hero-coral-reef.jpg";
+import { useState } from "react";
 
 const Hero = () => {
+  const [draggedButton, setDraggedButton] = useState<string | null>(null);
+  const [buttonPositions, setButtonPositions] = useState<{[key: string]: {x: number, y: number}}>({});
+
+  const handleMouseDown = (e: React.MouseEvent, buttonId: string) => {
+    e.preventDefault();
+    setDraggedButton(buttonId);
+    
+    const handleMouseMove = (moveEvent: MouseEvent) => {
+      if (draggedButton === buttonId) {
+        setButtonPositions(prev => ({
+          ...prev,
+          [buttonId]: {
+            x: moveEvent.clientX - 100, // Offset for button center
+            y: moveEvent.clientY - 25
+          }
+        }));
+      }
+    };
+
+    const handleMouseUp = () => {
+      setDraggedButton(null);
+      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseup', handleMouseUp);
+    };
+
+    document.addEventListener('mousemove', handleMouseMove);
+    document.addEventListener('mouseup', handleMouseUp);
+  };
   return (
     <section id="home" className="relative min-h-screen flex items-center justify-center overflow-hidden">
       {/* Background Image with Overlay */}
@@ -54,17 +83,50 @@ const Hero = () => {
 
           {/* CTA Buttons */}
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-            <Button variant="coral" size="lg" className="text-lg px-8 py-4 h-auto">
+            <Button 
+              variant="coral" 
+              size="lg" 
+              className="text-lg px-8 py-4 h-auto cursor-move select-none transition-transform hover:scale-105"
+              style={buttonPositions['btn1'] ? {
+                position: 'fixed',
+                left: buttonPositions['btn1'].x,
+                top: buttonPositions['btn1'].y,
+                zIndex: 1000
+              } : {}}
+              onMouseDown={(e) => handleMouseDown(e, 'btn1')}
+            >
               <Play className="mr-2" size={20} />
               Explore Coral Reefs
             </Button>
             
-            <Button variant="glass" size="lg" className="text-lg px-8 py-4 h-auto">
+            <Button 
+              variant="glass" 
+              size="lg" 
+              className="text-lg px-8 py-4 h-auto cursor-move select-none transition-transform hover:scale-105"
+              style={buttonPositions['btn2'] ? {
+                position: 'fixed',
+                left: buttonPositions['btn2'].x,
+                top: buttonPositions['btn2'].y,
+                zIndex: 1000
+              } : {}}
+              onMouseDown={(e) => handleMouseDown(e, 'btn2')}
+            >
               <MapPin className="mr-2" size={20} />
               View Reef Map
             </Button>
             
-            <Button variant="outline" size="lg" className="text-lg px-8 py-4 h-auto bg-white/10 border-white/30 text-white hover:bg-white/20">
+            <Button 
+              variant="outline" 
+              size="lg" 
+              className="text-lg px-8 py-4 h-auto bg-white/10 border-white/30 text-white hover:bg-white/20 cursor-move select-none transition-transform hover:scale-105"
+              style={buttonPositions['btn3'] ? {
+                position: 'fixed',
+                left: buttonPositions['btn3'].x,
+                top: buttonPositions['btn3'].y,
+                zIndex: 1000
+              } : {}}
+              onMouseDown={(e) => handleMouseDown(e, 'btn3')}
+            >
               <BookOpen className="mr-2" size={20} />
               Learn Why Corals Matter
             </Button>
