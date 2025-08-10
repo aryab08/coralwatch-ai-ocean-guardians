@@ -1,6 +1,7 @@
 import Header from "@/components/Header";
 import Hero from "@/components/Hero";
 import CoralInfo from "@/components/CoralInfo";
+import MapSection from "@/components/MapSection";
 
 const Index = () => {
   return (
@@ -9,6 +10,7 @@ const Index = () => {
       <main>
         <Hero />
         <CoralInfo />
+        <MapSection />
       </main>
     </div>
   );
