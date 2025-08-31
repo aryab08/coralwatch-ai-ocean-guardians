@@ -58,8 +58,10 @@ const MapSection = () => {
   const [showTokenInput, setShowTokenInput] = useState(false);
 
   useEffect(() => {
+    console.log('MapSection mounted, token:', mapboxToken ? 'Available' : 'Not available');
     if (mapboxToken) {
-      initializeMap(mapboxToken);
+      // Small delay to ensure container is ready
+      setTimeout(() => initializeMap(mapboxToken), 100);
     }
   }, [mapboxToken]);
 
@@ -105,7 +107,9 @@ const MapSection = () => {
       });
 
       // Add coral reef markers
+      console.log('Adding markers for', coralReefs.length, 'coral reefs...');
       coralReefs.forEach((reef, index) => {
+        console.log('Creating marker for:', reef.name);
         // Create custom marker element
         const markerEl = document.createElement('div');
         markerEl.className = 'coral-reef-marker';
@@ -119,6 +123,8 @@ const MapSection = () => {
         const marker = new mapboxgl.Marker(markerEl)
           .setLngLat(reef.coordinates as [number, number])
           .addTo(map.current!);
+        
+        console.log('Added marker for:', reef.name, 'at coordinates:', reef.coordinates);
 
         // Add click event to marker
         markerEl.addEventListener('click', () => {
@@ -211,8 +217,12 @@ const MapSection = () => {
         <div className="grid lg:grid-cols-4 gap-8">
           {/* Map */}
           <div className="lg:col-span-3">
-            <div className="relative h-[600px] rounded-xl overflow-hidden shadow-2xl">
-              <div ref={mapContainer} className="absolute inset-0" />
+            <div className="relative h-[600px] rounded-xl overflow-hidden shadow-2xl bg-muted">
+              <div 
+                ref={mapContainer} 
+                className="absolute inset-0 w-full h-full" 
+                style={{ minHeight: '600px' }}
+              />
               {showTokenInput && (
                 <div className="absolute inset-0 glass-ocean flex items-center justify-center">
                   <div className="text-center text-white">
