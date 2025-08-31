@@ -54,8 +54,14 @@ const MapSection = () => {
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<mapboxgl.Map | null>(null);
   const [selectedReef, setSelectedReef] = useState<typeof coralReefs[0] | null>(null);
-  const [mapboxToken, setMapboxToken] = useState('');
-  const [showTokenInput, setShowTokenInput] = useState(true);
+  const [mapboxToken, setMapboxToken] = useState('pk.eyJ1IjoibG92YWJsZS1kZW1vIiwiYSI6ImNscWx2a3FzbjBiODAya3A1YWN3ZmkwaDcifQ.DOJneBl5c6dkKlrI4Cco4Q');
+  const [showTokenInput, setShowTokenInput] = useState(false);
+
+  useEffect(() => {
+    if (mapboxToken) {
+      initializeMap(mapboxToken);
+    }
+  }, [mapboxToken]);
 
   const initializeMap = (token: string) => {
     if (!mapContainer.current || !token) return;
