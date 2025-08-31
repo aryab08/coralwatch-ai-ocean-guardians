@@ -33,16 +33,26 @@ const MapContainer: React.FC<MapContainerProps> = ({ coralReefs, onReefSelect, s
       console.log('Initializing Google Maps...');
       
       try {
-        // Initialize the map
-        const { Map } = await google.maps.importLibrary("maps") as google.maps.MapsLibrary;
-        const { AdvancedMarkerElement } = await google.maps.importLibrary("marker") as google.maps.MarkerLibrary;
+        // Initialize the map with a more reliable approach
+        const { Map } = await window.google.maps.importLibrary("maps") as google.maps.MapsLibrary;
+        const { AdvancedMarkerElement } = await window.google.maps.importLibrary("marker") as google.maps.MarkerLibrary;
         
         googleMapRef.current = new Map(mapRef.current, {
           zoom: 3,
           center: { lat: 15, lng: 30 },
-          mapId: 'coral-reef-map',
-          mapTypeId: 'satellite',
+          mapId: 'DEMO_MAP_ID',
+          mapTypeId: 'hybrid',
           gestureHandling: 'cooperative',
+          zoomControl: true,
+          streetViewControl: false,
+          fullscreenControl: true,
+          styles: [
+            {
+              featureType: "water",
+              elementType: "geometry",
+              stylers: [{ color: "#1e40af" }]
+            }
+          ]
         });
 
         console.log('Google Maps initialized successfully');
@@ -61,8 +71,27 @@ const MapContainer: React.FC<MapContainerProps> = ({ coralReefs, onReefSelect, s
           const markerEl = document.createElement('div');
           markerEl.className = 'coral-reef-marker';
           markerEl.innerHTML = `
-            <div class="w-8 h-8 bg-coral rounded-full border-2 border-white shadow-lg flex items-center justify-center cursor-pointer transform hover:scale-110 transition-all duration-300">
-              <div class="w-3 h-3 bg-white rounded-full animate-pulse"></div>
+            <div style="
+              width: 32px; 
+              height: 32px; 
+              background: linear-gradient(135deg, #f97316, #ec4899); 
+              border-radius: 50%; 
+              border: 3px solid white; 
+              box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              cursor: pointer;
+              transform: scale(1);
+              transition: transform 0.2s ease;
+            ">
+              <div style="
+                width: 8px; 
+                height: 8px; 
+                background: white; 
+                border-radius: 50%;
+                animation: pulse 2s infinite;
+              "></div>
             </div>
           `;
 
@@ -93,10 +122,12 @@ const MapContainer: React.FC<MapContainerProps> = ({ coralReefs, onReefSelect, s
     };
 
     // Load Google Maps API if not already loaded
-    if (typeof google === 'undefined') {
+    if (typeof window.google === 'undefined') {
       console.log('Loading Google Maps API...');
       const script = document.createElement('script');
-      script.src = `https://maps.googleapis.com/maps/api/js?key=AIzaSyBFw0Qbyq9zTFTd-tUY6dO9uONWm2pY_hQ&libraries=maps,marker&v=beta`;
+      script.src = `https://maps.googleapis.com/maps/api/js?key=AIzaSyD5G8F3QZ8RzQ9HF6tKj7M2XL1KP4N8VHE&libraries=maps,marker&v=weekly`;
+      script.async = true;
+      script.defer = true;
       script.async = true;
       script.defer = true;
       script.onload = initializeMap;
