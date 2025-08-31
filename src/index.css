@@ -32,6 +32,7 @@ All colors MUST be HSL.
 
     /* Vibrant turquoise accent */
     --accent: 180 85% 65%;
+    --coral: 345 85% 75%;
     --accent-foreground: 215 85% 25%;
 
     --destructive: 0 84.2% 60.2%;

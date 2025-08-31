@@ -64,18 +64,26 @@ const MapSection = () => {
   }, [mapboxToken]);
 
   const initializeMap = (token: string) => {
-    if (!mapContainer.current || !token) return;
+    console.log('Initializing map with token:', token ? 'Token provided' : 'No token');
+    if (!mapContainer.current || !token) {
+      console.log('Map initialization failed:', { container: !!mapContainer.current, token: !!token });
+      return;
+    }
 
-    mapboxgl.accessToken = token;
-    
-    map.current = new mapboxgl.Map({
-      container: mapContainer.current,
-      style: 'mapbox://styles/mapbox/satellite-streets-v12',
-      projection: 'globe',
-      zoom: 2,
-      center: [30, 15],
-      pitch: 0,
-    });
+    try {
+      mapboxgl.accessToken = token;
+      console.log('Mapbox token set, creating map...');
+      
+      map.current = new mapboxgl.Map({
+        container: mapContainer.current,
+        style: 'mapbox://styles/mapbox/satellite-streets-v12',
+        projection: 'globe',
+        zoom: 2,
+        center: [30, 15],
+        pitch: 0,
+      });
+      
+      console.log('Map created successfully');
 
     // Add navigation controls
     map.current.addControl(
@@ -87,6 +95,7 @@ const MapSection = () => {
 
     // Add atmosphere and fog effects
     map.current.on('style.load', () => {
+      console.log('Map style loaded, adding fog and markers...');
       map.current?.setFog({
         color: 'rgb(186, 210, 235)',
         'high-color': 'rgb(36, 92, 223)',
@@ -145,10 +154,16 @@ const MapSection = () => {
 
         marker.setPopup(popup);
       });
+      
+      console.log('Added', coralReefs.length, 'coral reef markers to map');
     });
 
     setShowTokenInput(false);
-  };
+    console.log('Map initialization complete');
+  } catch (error) {
+    console.error('Error initializing map:', error);
+  }
+};
 
   const handleTokenSubmit = () => {
     if (mapboxToken.trim()) {
