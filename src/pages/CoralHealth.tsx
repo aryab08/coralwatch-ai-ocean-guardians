@@ -131,27 +131,6 @@ const CoralHealth = () => {
               </div>
             </CardContent>
           </Card>
-
-          <div className="grid md:grid-cols-3 gap-6 mt-8">
-            <Card className="text-center">
-              <CardContent className="pt-6">
-                <div className="text-3xl font-bold text-emerald-600 mb-2">95%</div>
-                <p className="text-sm text-muted-foreground">Accuracy Rate</p>
-              </CardContent>
-            </Card>
-            <Card className="text-center">
-              <CardContent className="pt-6">
-                <div className="text-3xl font-bold text-teal-600 mb-2">15+</div>
-                <p className="text-sm text-muted-foreground">Disease Types</p>
-              </CardContent>
-            </Card>
-            <Card className="text-center">
-              <CardContent className="pt-6">
-                <div className="text-3xl font-bold text-cyan-600 mb-2">&lt; 5s</div>
-                <p className="text-sm text-muted-foreground">Analysis Time</p>
-              </CardContent>
-            </Card>
-          </div>
         </div>
       </main>
     </div>

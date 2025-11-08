@@ -131,27 +131,6 @@ const DetectDebris = () => {
               </div>
             </CardContent>
           </Card>
-
-          <div className="grid md:grid-cols-3 gap-6 mt-8">
-            <Card className="text-center">
-              <CardContent className="pt-6">
-                <div className="text-3xl font-bold text-orange-600 mb-2">92%</div>
-                <p className="text-sm text-muted-foreground">Detection Rate</p>
-              </CardContent>
-            </Card>
-            <Card className="text-center">
-              <CardContent className="pt-6">
-                <div className="text-3xl font-bold text-red-600 mb-2">10+</div>
-                <p className="text-sm text-muted-foreground">Debris Types</p>
-              </CardContent>
-            </Card>
-            <Card className="text-center">
-              <CardContent className="pt-6">
-                <div className="text-3xl font-bold text-amber-600 mb-2">&lt; 3s</div>
-                <p className="text-sm text-muted-foreground">Processing Time</p>
-              </CardContent>
-            </Card>
-          </div>
         </div>
       </main>
     </div>
