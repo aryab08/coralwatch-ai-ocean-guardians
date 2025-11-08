@@ -1,16 +1,16 @@
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { Menu, X } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const navItems = [
-    { name: "Home", href: "#home" },
-    { name: "About Corals", href: "#corals" },
-    { name: "Reef Map", href: "#map" },
-    { name: "Global Voices", href: "#voices" },
-    { name: "AI Research", href: "#ai" },
+    { name: "Home", href: "#home", type: "anchor" },
+    { name: "Coral Health Check", href: "/coral-health", type: "link" },
+    { name: "Detect Debris", href: "/detect-debris", type: "link" },
+    { name: "Reef Map", href: "#map", type: "anchor" },
   ];
 
   return (
@@ -42,16 +42,27 @@ const Header = () => {
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-8">
-            {navItems.map((item) => (
-              <a
-                key={item.name}
-                href={item.href}
-                className="text-foreground hover:text-accent transition-colors duration-300 font-medium relative group"
-              >
-                {item.name}
-                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-accent transition-all duration-300 group-hover:w-full"></span>
-              </a>
-            ))}
+            {navItems.map((item) => 
+              item.type === "link" ? (
+                <Link
+                  key={item.name}
+                  to={item.href}
+                  className="text-foreground hover:text-accent transition-colors duration-300 font-medium relative group"
+                >
+                  {item.name}
+                  <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-accent transition-all duration-300 group-hover:w-full"></span>
+                </Link>
+              ) : (
+                <a
+                  key={item.name}
+                  href={item.href}
+                  className="text-foreground hover:text-accent transition-colors duration-300 font-medium relative group"
+                >
+                  {item.name}
+                  <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-accent transition-all duration-300 group-hover:w-full"></span>
+                </a>
+              )
+            )}
           </div>
 
           {/* CTA Button */}
@@ -77,16 +88,27 @@ const Header = () => {
         {isMenuOpen && (
           <div className="md:hidden">
             <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 glass-coral rounded-lg mt-2">
-              {navItems.map((item) => (
-                <a
-                  key={item.name}
-                  href={item.href}
-                  className="block px-3 py-2 text-foreground hover:text-accent transition-colors duration-300 font-medium"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  {item.name}
-                </a>
-              ))}
+              {navItems.map((item) => 
+                item.type === "link" ? (
+                  <Link
+                    key={item.name}
+                    to={item.href}
+                    className="block px-3 py-2 text-foreground hover:text-accent transition-colors duration-300 font-medium"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    {item.name}
+                  </Link>
+                ) : (
+                  <a
+                    key={item.name}
+                    href={item.href}
+                    className="block px-3 py-2 text-foreground hover:text-accent transition-colors duration-300 font-medium"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    {item.name}
+                  </a>
+                )
+              )}
               <div className="px-3 py-2">
                 <Button variant="ocean" className="w-full">
                   Explore Reefs

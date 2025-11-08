@@ -115,18 +115,22 @@ const MapContainer: React.FC<MapContainerProps> = ({ coralReefs, onReefSelect, s
     };
 
     // Load Google Maps API if not already loaded
-    if (typeof window.google === 'undefined') {
+    if (typeof window.google === 'undefined' || !window.google.maps) {
       console.log('Loading Google Maps API...');
       const script = document.createElement('script');
-      script.src = `https://maps.googleapis.com/maps/api/js?key=AIzaSyD5G8F3QZ8RzQ9HF6tKj7M2XL1KP4N8VHE&libraries=maps,marker&v=weekly`;
+      script.src = `https://maps.googleapis.com/maps/api/js?key=AIzaSyBFw0Qbyq9zTFTd-tUY6dO9uONWm2pY_hQ&libraries=maps,marker&loading=async`;
       script.async = true;
       script.defer = true;
-      script.async = true;
-      script.defer = true;
-      script.onload = initializeMap;
-      script.onerror = () => console.error('Failed to load Google Maps API');
+      script.onload = () => {
+        console.log('Google Maps script loaded');
+        initializeMap();
+      };
+      script.onerror = (error) => {
+        console.error('Failed to load Google Maps API:', error);
+      };
       document.head.appendChild(script);
     } else {
+      console.log('Google Maps already loaded, initializing...');
       initializeMap();
     }
 
