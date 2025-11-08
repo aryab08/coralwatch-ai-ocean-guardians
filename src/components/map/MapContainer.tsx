@@ -46,13 +46,6 @@ const MapContainer: React.FC<MapContainerProps> = ({ coralReefs, onReefSelect, s
           zoomControl: true,
           streetViewControl: false,
           fullscreenControl: true,
-          styles: [
-            {
-              featureType: "water",
-              elementType: "geometry",
-              stylers: [{ color: "#1e40af" }]
-            }
-          ]
         });
 
         console.log('Google Maps initialized successfully');
