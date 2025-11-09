@@ -173,16 +173,72 @@ const CoralHealth = () => {
                     </div>
 
                     {analysisResult && (
-                      <Card className="mt-6 border-emerald-200">
-                        <CardHeader>
-                          <CardTitle className="text-emerald-600">Analysis Results</CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                          <pre className="text-sm bg-muted p-4 rounded-lg overflow-auto">
-                            {JSON.stringify(analysisResult, null, 2)}
-                          </pre>
-                        </CardContent>
-                      </Card>
+                      <div className="mt-6 space-y-6">
+                        <Card>
+                          <CardHeader>
+                            <CardTitle className="text-2xl">Analysis Results</CardTitle>
+                          </CardHeader>
+                          <CardContent className="space-y-6">
+                            {/* Display annotated image */}
+                            {analysisResult.image && (
+                              <img
+                                src={`data:image/jpeg;base64,${analysisResult.image}`}
+                                alt="Analyzed coral with detections"
+                                className="w-full rounded-lg shadow-lg"
+                              />
+                            )}
+
+                            {/* Overall Health Summary */}
+                            {analysisResult.results && analysisResult.results.length > 0 && (
+                              <div className="space-y-4">
+                                <h3 className="text-lg font-semibold">Detected Corals:</h3>
+                                <div className="grid gap-3">
+                                  {analysisResult.results.map((result: any, index: number) => {
+                                    const isHealthy = result.health?.toLowerCase().includes('healthy');
+                                    const confidence = Math.round(result.confidence * 100);
+                                    
+                                    return (
+                                      <div
+                                        key={index}
+                                        className={`p-4 rounded-lg border-l-4 ${
+                                          isHealthy
+                                            ? 'bg-emerald-500/10 border-emerald-500'
+                                            : 'bg-destructive/10 border-destructive'
+                                        }`}
+                                      >
+                                        <div className="flex items-center justify-between">
+                                          <div className="flex items-center gap-2">
+                                            <span className="text-xl">
+                                              {isHealthy ? '✓' : '⚠'}
+                                            </span>
+                                            <span className="font-semibold">
+                                              {result.health || 'Unknown'}
+                                            </span>
+                                          </div>
+                                          <span
+                                            className={`font-bold ${
+                                              isHealthy ? 'text-emerald-600' : 'text-destructive'
+                                            }`}
+                                          >
+                                            {confidence}% confidence
+                                          </span>
+                                        </div>
+                                      </div>
+                                    );
+                                  })}
+                                </div>
+                              </div>
+                            )}
+
+                            {/* No detections message */}
+                            {analysisResult.results && analysisResult.results.length === 0 && (
+                              <div className="text-center py-8 text-muted-foreground">
+                                No corals detected in the image
+                              </div>
+                            )}
+                          </CardContent>
+                        </Card>
+                      </div>
                     )}
                   </div>
                 ) : (
