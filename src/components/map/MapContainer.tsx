@@ -24,34 +24,31 @@ interface MapContainerProps {
 const MapContainer: React.FC<MapContainerProps> = ({ coralReefs, onReefSelect, selectedReef }) => {
   const mapRef = useRef<HTMLDivElement>(null);
   const googleMapRef = useRef<google.maps.Map | null>(null);
-  const markersRef = useRef<google.maps.marker.AdvancedMarkerElement[]>([]);
+  const markersRef = useRef<google.maps.Marker[]>([]);
 
   useEffect(() => {
-    const initializeMap = async () => {
-      if (!mapRef.current) return;
+    const initializeMap = () => {
+      if (!mapRef.current || !window.google) return;
       
       console.log('Initializing Google Maps...');
       
       try {
-        // Initialize the map with a more reliable approach
-        const { Map } = await window.google.maps.importLibrary("maps") as google.maps.MapsLibrary;
-        const { AdvancedMarkerElement } = await window.google.maps.importLibrary("marker") as google.maps.MarkerLibrary;
-        
-        googleMapRef.current = new Map(mapRef.current, {
+        // Create the map with standard API
+        googleMapRef.current = new window.google.maps.Map(mapRef.current, {
           zoom: 3,
           center: { lat: 15, lng: 30 },
-          mapId: 'DEMO_MAP_ID',
-          mapTypeId: 'hybrid',
-          gestureHandling: 'cooperative',
+          mapTypeId: 'satellite',
+          gestureHandling: 'greedy',
           zoomControl: true,
           streetViewControl: false,
           fullscreenControl: true,
+          mapTypeControl: true,
         });
 
         console.log('Google Maps initialized successfully');
 
         // Clear existing markers
-        markersRef.current.forEach(marker => marker.map = null);
+        markersRef.current.forEach(marker => marker.setMap(null));
         markersRef.current = [];
 
         // Add coral reef markers
@@ -60,39 +57,19 @@ const MapContainer: React.FC<MapContainerProps> = ({ coralReefs, onReefSelect, s
         coralReefs.forEach((reef) => {
           console.log('Creating marker for:', reef.name);
           
-          // Create custom marker element
-          const markerEl = document.createElement('div');
-          markerEl.className = 'coral-reef-marker';
-          markerEl.innerHTML = `
-            <div style="
-              width: 32px; 
-              height: 32px; 
-              background: linear-gradient(135deg, #f97316, #ec4899); 
-              border-radius: 50%; 
-              border: 3px solid white; 
-              box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-              display: flex;
-              align-items: center;
-              justify-content: center;
-              cursor: pointer;
-              transform: scale(1);
-              transition: transform 0.2s ease;
-            ">
-              <div style="
-                width: 8px; 
-                height: 8px; 
-                background: white; 
-                border-radius: 50%;
-                animation: pulse 2s infinite;
-              "></div>
-            </div>
-          `;
-
-          const marker = new AdvancedMarkerElement({
+          const marker = new window.google.maps.Marker({
             map: googleMapRef.current,
             position: { lat: reef.coordinates[1], lng: reef.coordinates[0] },
-            content: markerEl,
             title: reef.name,
+            icon: {
+              path: window.google.maps.SymbolPath.CIRCLE,
+              scale: 10,
+              fillColor: '#f97316',
+              fillOpacity: 1,
+              strokeColor: '#ffffff',
+              strokeWeight: 3,
+            },
+            animation: window.google.maps.Animation.DROP,
           });
 
           // Add click event
@@ -118,12 +95,12 @@ const MapContainer: React.FC<MapContainerProps> = ({ coralReefs, onReefSelect, s
     if (typeof window.google === 'undefined' || !window.google.maps) {
       console.log('Loading Google Maps API...');
       const script = document.createElement('script');
-      script.src = `https://maps.googleapis.com/maps/api/js?key=AIzaSyBFw0Qbyq9zTFTd-tUY6dO9uONWm2pY_hQ&libraries=maps,marker&loading=async`;
+      script.src = `https://maps.googleapis.com/maps/api/js?key=AIzaSyBFw0Qbyq9zTFTd-tUY6dO9uONWm2pY_hQ&callback=Function.prototype`;
       script.async = true;
       script.defer = true;
       script.onload = () => {
         console.log('Google Maps script loaded');
-        initializeMap();
+        setTimeout(initializeMap, 100);
       };
       script.onerror = (error) => {
         console.error('Failed to load Google Maps API:', error);
@@ -136,7 +113,7 @@ const MapContainer: React.FC<MapContainerProps> = ({ coralReefs, onReefSelect, s
 
     return () => {
       // Cleanup markers
-      markersRef.current.forEach(marker => marker.map = null);
+      markersRef.current.forEach(marker => marker.setMap(null));
       markersRef.current = [];
     };
   }, [coralReefs, onReefSelect]);
