@@ -1,14 +1,18 @@
 import { useState } from "react";
-import { ArrowLeft, Upload, Activity } from "lucide-react";
+import { ArrowLeft, Upload, Activity, Loader2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { useToast } from "@/hooks/use-toast";
 import Header from "@/components/Header";
 
 const CoralHealth = () => {
   const navigate = useNavigate();
+  const { toast } = useToast();
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [isDragging, setIsDragging] = useState(false);
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [analysisResult, setAnalysisResult] = useState<any>(null);
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -38,8 +42,56 @@ const CoralHealth = () => {
       const reader = new FileReader();
       reader.onloadend = () => {
         setSelectedImage(reader.result as string);
+        setAnalysisResult(null);
       };
       reader.readAsDataURL(file);
+    }
+  };
+
+  const analyzeImage = async () => {
+    if (!selectedImage) return;
+
+    setIsAnalyzing(true);
+    try {
+      // Convert base64 to blob
+      const base64Data = selectedImage.split(',')[1];
+      const byteCharacters = atob(base64Data);
+      const byteNumbers = new Array(byteCharacters.length);
+      for (let i = 0; i < byteCharacters.length; i++) {
+        byteNumbers[i] = byteCharacters.charCodeAt(i);
+      }
+      const byteArray = new Uint8Array(byteNumbers);
+      const blob = new Blob([byteArray], { type: 'image/jpeg' });
+
+      // Create form data
+      const formData = new FormData();
+      formData.append('file', blob, 'coral.jpg');
+
+      const response = await fetch('https://degree-checker-01-coral-health-orchestrator.hf.space/process', {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (!response.ok) {
+        throw new Error('Analysis failed');
+      }
+
+      const result = await response.json();
+      setAnalysisResult(result);
+      
+      toast({
+        title: "Analysis Complete",
+        description: "Coral health analysis has been completed successfully.",
+      });
+    } catch (error) {
+      console.error('Analysis error:', error);
+      toast({
+        title: "Analysis Failed",
+        description: "Failed to analyze the image. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsAnalyzing(false);
     }
   };
 
@@ -96,14 +148,42 @@ const CoralHealth = () => {
                     <div className="flex gap-4 justify-center">
                       <Button
                         variant="outline"
-                        onClick={() => setSelectedImage(null)}
+                        onClick={() => {
+                          setSelectedImage(null);
+                          setAnalysisResult(null);
+                        }}
+                        disabled={isAnalyzing}
                       >
                         Remove Image
                       </Button>
-                      <Button className="bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700">
-                        Analyze Health
+                      <Button 
+                        className="bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700"
+                        onClick={analyzeImage}
+                        disabled={isAnalyzing}
+                      >
+                        {isAnalyzing ? (
+                          <>
+                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                            Analyzing...
+                          </>
+                        ) : (
+                          'Analyze Health'
+                        )}
                       </Button>
                     </div>
+
+                    {analysisResult && (
+                      <Card className="mt-6 border-emerald-200">
+                        <CardHeader>
+                          <CardTitle className="text-emerald-600">Analysis Results</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                          <pre className="text-sm bg-muted p-4 rounded-lg overflow-auto">
+                            {JSON.stringify(analysisResult, null, 2)}
+                          </pre>
+                        </CardContent>
+                      </Card>
+                    )}
                   </div>
                 ) : (
                   <>
