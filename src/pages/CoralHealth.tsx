@@ -198,30 +198,36 @@ const CoralHealth = () => {
                                     const confidence = Math.round(result.confidence * 100);
                                     
                                     return (
-                                      <div
-                                        key={index}
-                                        className={`p-4 rounded-lg border-l-4 ${
-                                          isHealthy
-                                            ? 'bg-emerald-500/10 border-emerald-500'
-                                            : 'bg-destructive/10 border-destructive'
-                                        }`}
-                                      >
-                                        <div className="flex items-center justify-between">
-                                          <div className="flex items-center gap-2">
-                                            <span className="text-xl">
-                                              {isHealthy ? '✓' : '⚠'}
-                                            </span>
-                                            <span className="font-semibold">
-                                              {result.health || 'Unknown'}
+                                      <div key={index} className="space-y-1">
+                                        <div className={`text-xs font-bold uppercase tracking-wider ${
+                                          isHealthy ? 'text-emerald-600' : 'text-destructive'
+                                        }`}>
+                                          {isHealthy ? '● Healthy Coral' : '● Bleached Coral'}
+                                        </div>
+                                        <div
+                                          className={`p-4 rounded-lg border-l-4 ${
+                                            isHealthy
+                                              ? 'bg-emerald-500/10 border-emerald-500'
+                                              : 'bg-destructive/10 border-destructive'
+                                          }`}
+                                        >
+                                          <div className="flex items-center justify-between">
+                                            <div className="flex items-center gap-2">
+                                              <span className="text-xl">
+                                                {isHealthy ? '✓' : '⚠'}
+                                              </span>
+                                              <span className="font-semibold">
+                                                {result.health || 'Unknown'}
+                                              </span>
+                                            </div>
+                                            <span
+                                              className={`font-bold ${
+                                                isHealthy ? 'text-emerald-600' : 'text-destructive'
+                                              }`}
+                                            >
+                                              {confidence}% confidence
                                             </span>
                                           </div>
-                                          <span
-                                            className={`font-bold ${
-                                              isHealthy ? 'text-emerald-600' : 'text-destructive'
-                                            }`}
-                                          >
-                                            {confidence}% confidence
-                                          </span>
                                         </div>
                                       </div>
                                     );
